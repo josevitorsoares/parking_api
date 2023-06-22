@@ -21,7 +21,7 @@ const createTables = async () => {
             ` CREATE TABLE parking(
                 id VARCHAR(255) PRIMARY KEY,
                 entry_time TIME NOT NULL,
-                exit_time TIME,
+                exit_time TIME NOT NULL,
                 value NUMERIC NOT NULL,
                 CONSTRAINT FK_cars_id FOREIGN KEY(id) REFERENCES cars(id),
                 CONSTRAINT FK_vacancies_id FOREIGN KEY(id) REFERENCES vacancies(id)
