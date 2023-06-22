@@ -13,17 +13,18 @@ const createTables = async () => {
         const createTableVacanciesQuery =
             `CREATE TABLE vacancies(
                 id VARCHAR(255) PRIMARY KEY,
-                vacancy_number NUMERIC
+                vacancy_number VARCHAR(255) NOT NULL,
+                available BOOLEAN
             )`;
 
         const createTableParkingQuery =
             ` CREATE TABLE parking(
                 id VARCHAR(255) PRIMARY KEY,
                 entry_time TIME NOT NULL,
-                exit_time TIME NOT NULL,
+                exit_time TIME,
                 value NUMERIC NOT NULL,
-                CONSTRAINT FK_cars FOREIGN KEY(id) REFERENCES cars(id),
-                CONSTRAINT FK_vacancies FOREIGN KEY(id) REFERENCES vacancies(id)
+                CONSTRAINT FK_cars_id FOREIGN KEY(id) REFERENCES cars(id),
+                CONSTRAINT FK_vacancies_id FOREIGN KEY(id) REFERENCES vacancies(id)
             )`;
 
         await client
@@ -33,7 +34,7 @@ const createTables = async () => {
 
         await client
             .query(createTableVacanciesQuery)
-            .then(() => console.log("Table vacncies was created"))
+            .then(() => console.log("Table vacancies was created"))
             .catch((error) => console.log(error));
 
         await client
