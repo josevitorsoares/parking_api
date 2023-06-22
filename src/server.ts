@@ -1,5 +1,8 @@
 import express from "express";
 import { router } from "./routes";
+import { client } from "../database/db";
+
+client;
 
 const app = express();
 
