@@ -9,6 +9,8 @@ dayjs.extend(utc);
 class ParkingService {
     async create(entry_time: Date, exit_time: Date, car_id: string, vacancy_id: string): Promise<void>{
         const VALORPERHOUR = 20; // Value per 1h on parking
+        const OPENINGTIME = 9;
+        const CLOSETIME = 18;
         
         const parking = new Parkin();
 
@@ -17,6 +19,13 @@ class ParkingService {
 
         if (!carID || !vacancyID) {
             throw new Error("Not exist this Car ID or not exist this Vacancy ID!");
+        }
+
+        const entryHour = this.verifyEntryTime(entry_time);
+        const exitHour = this.verifyExitTime(exit_time);
+
+        if (entryHour < OPENINGTIME || exitHour > CLOSETIME){
+            throw new Error("Entry time or exit time is outside opening hours!");
         }
 
         const compare = this.compareHours(
@@ -66,6 +75,16 @@ class ParkingService {
         const end_date_utc = this.convertToUTC(end_date);
 
         return dayjs(end_date_utc).diff(start_date_utc, "hours");
+    }
+
+    verifyEntryTime(entry_time: Date): number{
+        const entryHour = dayjs(entry_time).get("hour");
+        return entryHour;
+    }
+
+    verifyExitTime(exit_time: Date): number{
+        const exitHour = dayjs(exit_time).get("hour");
+        return exitHour;
     }
 }
 
