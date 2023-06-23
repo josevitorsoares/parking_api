@@ -3,6 +3,8 @@ import utc from "dayjs/plugin/utc";
 
 import { client } from "../../database/db";
 import { Parkin } from "../models/Parking";
+import { Vacancies } from "../models/Vacancies";
+import { VacanciesServices } from "./VacanciesService";
 
 dayjs.extend(utc);
 
@@ -13,6 +15,7 @@ class ParkingService {
         const CLOSETIME = 18;
         
         const parking = new Parkin();
+        const vacancyService = new VacanciesServices();
 
         const carID = this.findByCarID(car_id);
         const vacancyID = this.findByVacancyID(vacancy_id);
@@ -50,6 +53,8 @@ class ParkingService {
             .query(query, values)
             .then(() => console.log("Parking was created!"))
             .catch((error) => console.error(error));
+
+        await vacancyService.updateAvailableVacancy(vacancy_id);
     }
 
     async findByCarID(car_id: string) {

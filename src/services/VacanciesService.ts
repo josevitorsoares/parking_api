@@ -15,6 +15,15 @@ class VacanciesServices {
             .then(() => console.log("Vacancy was created!"))
             .catch((error) => console.error(error));
     }
+
+    async updateAvailableVacancy(vacancy_id: string){
+        const query = "UPDATE vacancies SET available = false WHERE id = $1";
+
+        await client
+            .query(query, [vacancy_id])
+            .then(()=>console.log("Vacancy was updated"))
+            .catch((error)=> console.error(error));
+    }
 }
 
 export { VacanciesServices };
