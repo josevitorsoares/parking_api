@@ -14,7 +14,7 @@ const createTables = async () => {
             `CREATE TABLE vacancies(
                 id VARCHAR(255) PRIMARY KEY,
                 vacancy_number VARCHAR(255) NOT NULL,
-                available BOOLEAN
+                available BOOLEAN NOT NULL
             )`;
 
         const createTableParkingQuery =
@@ -23,8 +23,11 @@ const createTables = async () => {
                 entry_time TIME NOT NULL,
                 exit_time TIME NOT NULL,
                 value NUMERIC NOT NULL,
-                CONSTRAINT FK_cars_id FOREIGN KEY(id) REFERENCES cars(id),
-                CONSTRAINT FK_vacancies_id FOREIGN KEY(id) REFERENCES vacancies(id)
+                fk_cars_id VARCHAR(255),
+                fk_vacancies_id VARCHAR(255),
+
+                CONSTRAINT FK_cars_id FOREIGN KEY(fk_cars_id) REFERENCES cars(id),
+                CONSTRAINT FK_vacancies_id FOREIGN KEY(fk_vacancies_id) REFERENCES vacancies(id)
             )`;
 
         await client
