@@ -24,8 +24,16 @@ class ParkingService {
             throw new Error("Not exist this Car ID or not exist this Vacancy ID!");
         }
 
-        const entryHour = this.verifyEntryTime(entry_time);
-        const exitHour = this.verifyExitTime(exit_time);
+        const currentDay = this.getCurrentDay();
+        const entryDay = this.getEntryDay(entry_time);
+        const exitDay = this.getExitDay(exit_time);
+
+        if (entryDay != currentDay || exitDay != currentDay) {
+            throw new Error("The day entered is different from the current day");
+        }
+
+        const entryHour = this.getEntryTime(entry_time);
+        const exitHour = this.getExitTime(exit_time);
 
         if (entryHour < OPENINGTIME || exitHour > CLOSETIME){
             throw new Error("Entry time or exit time is outside opening hours!");
@@ -70,14 +78,24 @@ class ParkingService {
         return dayjs(end_date_utc).diff(start_date_utc, "hours");
     }
 
-    verifyEntryTime(entry_time: Date): number{
-        const entryHour = dayjs(entry_time).get("hour");
-        return entryHour;
+    getEntryTime(entry_time: Date): number{
+        return dayjs(entry_time).get("hour");;
     }
 
-    verifyExitTime(exit_time: Date): number{
-        const exitHour = dayjs(exit_time).get("hour");
-        return exitHour;
+    getExitTime(exit_time: Date): number{
+        return dayjs(exit_time).get("hour");
+    }
+
+    getEntryDay(entry_time: Date): number{
+        return dayjs(entry_time).get("day");
+    }
+
+    getExitDay(exit_time: Date): number{
+        return dayjs(exit_time).get("day");
+    }
+
+    getCurrentDay():number {
+        return dayjs().get("day");
     }
 }
 
