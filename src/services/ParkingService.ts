@@ -3,8 +3,8 @@ import utc from "dayjs/plugin/utc";
 
 import { client } from "../../database/db";
 import { Parkin } from "../models/Parking";
-import { Vacancies } from "../models/Vacancies";
 import { VacanciesServices } from "./VacanciesService";
+import { CarsServices } from "./CarsServices";
 
 dayjs.extend(utc);
 
@@ -14,11 +14,11 @@ class ParkingService {
         const OPENINGTIME = 9;
         const CLOSETIME = 18;
         
-        const parking = new Parkin();
         const vacancyService = new VacanciesServices();
+        const carsService = new CarsServices();
 
-        const carID = this.findByCarID(car_id);
-        const vacancyID = this.findByVacancyID(vacancy_id);
+        const carID = carsService.findByID(car_id);
+        const vacancyID = vacancyService.findByID(vacancy_id);
 
         if (!carID || !vacancyID) {
             throw new Error("Not exist this Car ID or not exist this Vacancy ID!");
@@ -39,6 +39,8 @@ class ParkingService {
         if (compare <= 0) {
             throw new Error("The exit_time is lower or equal the entry_time!");
         }
+        
+        const parking = new Parkin();
 
         parking.entry_time = entry_time;
         parking.exit_time = exit_time;
@@ -55,20 +57,6 @@ class ParkingService {
             .catch((error) => console.error(error));
 
         await vacancyService.updateAvailableVacancy(vacancy_id);
-    }
-
-    async findByCarID(car_id: string) {
-        const query = "SELECT fk_car_id FROM parking WHERE fk_car_id = $1";
-
-        const parking = await client.query(query, [car_id]);
-        return parking;
-    }
-
-    async findByVacancyID(vacancy_id: string) {
-        const query = "SELECT fk_vacancy_id FROM parking WHERE fk_vacancy_id = $1";
-
-        const parking = await client.query(query, [vacancy_id]);
-        return parking;
     }
 
     convertToUTC(date: Date): string {

@@ -17,6 +17,13 @@ class CarsServices {
             .then(() => console.log("Car was created"))
             .catch((error) => console.error(error));
     }
+    
+    async findByID(id: string) {
+        const query = "SELECT id FROM cars WHERE id = $1";
+
+        const car = await client.query(query, [id]);
+        return car;
+    }
 }
 
 export { CarsServices };

@@ -24,6 +24,13 @@ class VacanciesServices {
             .then(()=>console.log("Vacancy was updated"))
             .catch((error)=> console.error(error));
     }
+
+    async findByID(id: string) {
+        const query = "SELECT id FROM vacancies WHERE id = $1";
+
+        const vacancy = await client.query(query, [id]);
+        return vacancy;
+    }
 }
 
 export { VacanciesServices };
