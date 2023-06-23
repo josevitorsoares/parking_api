@@ -20,8 +20,8 @@ const createTables = async () => {
         const createTableParkingQuery =
             ` CREATE TABLE parking(
                 id VARCHAR(255) PRIMARY KEY,
-                entry_time TIME NOT NULL,
-                exit_time TIME NOT NULL,
+                entry_time TIMESTAMP NOT NULL,
+                exit_time TIMESTAMP NOT NULL,
                 value NUMERIC NOT NULL,
                 fk_car_id VARCHAR(255),
                 fk_vacancy_id VARCHAR(255),
