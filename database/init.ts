@@ -21,13 +21,13 @@ const createTables = async () => {
             ` CREATE TABLE parking(
                 id VARCHAR(255) PRIMARY KEY,
                 entry_time TIMESTAMP NOT NULL,
-                exit_time TIMESTAMP NOT NULL,
+                exit_time TIMESTAMP,
                 value NUMERIC NOT NULL,
-                fk_car_id VARCHAR(255),
-                fk_vacancy_id VARCHAR(255),
+                car_id VARCHAR(255),
+                vacancy_id VARCHAR(255),
 
-                CONSTRAINT FK_cars_id FOREIGN KEY(fk_car_id) REFERENCES cars(id),
-                CONSTRAINT FK_vacancies_id FOREIGN KEY(fk_vacancy_id) REFERENCES vacancies(id)
+                CONSTRAINT FK_cars_id FOREIGN KEY(car_id) REFERENCES cars(id),
+                CONSTRAINT FK_vacancies_id FOREIGN KEY(vacancy_id) REFERENCES vacancies(id)
             )`;
 
         await client

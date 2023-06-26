@@ -5,8 +5,8 @@ class Parkin {
     entry_time: Date;
     exit_time: Date;
     value: number;
-    fk_car_id: string;
-    fk_vacancy_id: string;
+    car_id: string;
+    vacancy_id: string;
 
     constructor() {
         if (!this.id) {
