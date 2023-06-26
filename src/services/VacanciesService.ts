@@ -31,6 +31,20 @@ class VacanciesServices {
         const vacancy = await client.query(query, [id]);
         return vacancy;
     }
+
+    async verifyAvaliableVacancy(vacancy_id: string){
+        const query = "SELECT id FROM vacancies WHERE id = $1 AND available = true";
+
+        const vacancy = await client.query(query, [vacancy_id]);
+        return vacancy.rows[0];
+    }
+
+    async verifyAllAvailableVacancies(): Promise<number>{
+        const query = "SELECT COUNT(ID) FROM vacancies GROUP BY available HAVING available = true";
+
+        const vacancies = await client.query(query);
+        return vacancies.rowCount;
+    }
 }
 
 export { VacanciesServices };
