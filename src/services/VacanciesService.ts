@@ -16,11 +16,12 @@ class VacanciesServices {
             .catch((error) => console.error(error));
     }
 
-    async updateAvailableVacancy(vacancy_id: string){
-        const query = "UPDATE vacancies SET available = false WHERE id = $1";
-
+    async updateAvailableVacancy(vacancy_id: string, status: boolean){
+        const query = "UPDATE vacancies SET available = $1 WHERE id = $2";
+        const values = [status, vacancy_id];
+        
         await client
-            .query(query, [vacancy_id])
+            .query(query, values)
             .then(()=>console.log("Vacancy was updated"))
             .catch((error)=> console.error(error));
     }
@@ -29,7 +30,7 @@ class VacanciesServices {
         const query = "SELECT id FROM vacancies WHERE id = $1";
 
         const vacancy = await client.query(query, [id]);
-        return vacancy;
+        return vacancy.rows[0];
     }
 
     async verifyAvaliableVacancy(vacancy_id: string){
@@ -39,12 +40,13 @@ class VacanciesServices {
         return vacancy.rows[0];
     }
 
-    async verifyAllAvailableVacancies(): Promise<number>{
-        const query = "SELECT COUNT(ID) FROM vacancies GROUP BY available HAVING available = true";
+    // async verifyAllAvailableVacancies(): Promise<number>{
+    //     const query = "SELECT COUNT(ID) FROM vacancies GROUP BY available HAVING available = false";
 
-        const vacancies = await client.query(query);
-        return vacancies.rowCount;
-    }
+    //     const vacancies = await client.query(query);
+    //     console.log(vacancies.rows[0]);
+    //     return vacancies.rows[0];
+    // }
 }
 
 export { VacanciesServices };

@@ -4,12 +4,20 @@ import { ParkingService } from "../services/ParkingService";
 class ParkingController {
     async createParking(request: Request, response: Response): Promise<Response> {
         const parkinService = new ParkingService();
-        const { entry_time, exit_time, fk_car_id, fk_vacancy_id } = request.body;
-        
-        await parkinService.create(entry_time, exit_time, fk_car_id, fk_vacancy_id);
-        
-        return response.send();
+        const { car_id, vacancy_id } = request.body;
 
+        await parkinService.create(car_id, vacancy_id);
+
+        return response.send();
+    }
+
+    async unparking(request: Request, response: Response): Promise<Response> {
+        const parkingService = new ParkingService();
+        const { vacancy_id } = request.body;
+
+        await parkingService.unparking(vacancy_id);
+
+        return response.send();
     }
 }
 

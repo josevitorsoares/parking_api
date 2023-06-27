@@ -22,7 +22,7 @@ class CarsServices {
         const query = "SELECT id FROM cars WHERE id = $1";
 
         const car = await client.query(query, [id]);
-        return car;
+        return car.rows[0];
     }
 }
 

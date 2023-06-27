@@ -6,5 +6,6 @@ const parkingRoutes = Router();
 const parkingController = new ParkingController();
 
 parkingRoutes.post("/create", parkingController.createParking);
+parkingRoutes.post("/unparking", parkingController.unparking);
 
 export { parkingRoutes };

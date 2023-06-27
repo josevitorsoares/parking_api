@@ -8,21 +8,28 @@ import { CarsServices } from "./CarsServices";
 
 dayjs.extend(utc);
 
+const VALORPERHOUR = 20; // Value per 1h on parking
+const OPENINGTIME = 9; // Opening time
+const CLOSETIME = 18; // Closing time
+const ALLVACANCIES = 20; // Total parking vacancies
+
 class ParkingService {
-    async create(entry_time: Date, exit_time: Date, car_id: string, vacancy_id: string): Promise<void> {
-        const VALORPERHOUR = 20; // Value per 1h on parking
-        const OPENINGTIME = 9; // Opening time
-        const CLOSETIME = 18; // Closing time
-        const ALLVACANCIES = 20; // Total parking vacancies
+    async create(car_id: string, vacancy_id: string): Promise<void> {
+        const currentDate = this.getCurrentDate();
+        const hour = this.getHour(currentDate);
+
+        if (hour < OPENINGTIME || hour > CLOSETIME) {
+            throw new Error("Hours outside opening hours");
+        }
 
         const vacancyService = new VacanciesServices();
         const carsService = new CarsServices();
 
-        const allAvailableVacancies = await vacancyService.verifyAllAvailableVacancies();
+        // const allAvailableVacancies = await vacancyService.verifyAllAvailableVacancies();
 
-        if (allAvailableVacancies == ALLVACANCIES) {
-            throw new Error("There are no vacancies available!")
-        }
+        // if (allAvailableVacancies == ALLVACANCIES) {
+        //     throw new Error("There are no vacancies available!")
+        // }
 
         const carID = await carsService.findByID(car_id);
         const vacancyID = await vacancyService.findByID(vacancy_id);
@@ -37,82 +44,87 @@ class ParkingService {
             throw new Error("This vacancy doesn't available!")
         }
 
-        const currentDay = this.getCurrentDay();
-        const entryDay = this.getEntryDay(entry_time);
-        const exitDay = this.getExitDay(exit_time);
-
-        if (entryDay != currentDay || exitDay != currentDay) {
-            throw new Error("The day entered is different from the current day");
-        }
-
-        const entryHour = this.getEntryTime(entry_time);
-        const exitHour = this.getExitTime(exit_time);
-
-        if (entryHour < OPENINGTIME || exitHour > CLOSETIME) {
-            throw new Error("Entry time or exit time is outside opening hours!");
-        }
-
-        const compare = this.compareHours(
-            entry_time,
-            exit_time
-        );
-
-        if (compare <= 0) {
-            throw new Error("The exit_time is lower or equal the entry_time!");
-        }
-
         const parking = new Parkin();
 
-        parking.entry_time = entry_time;
-        parking.exit_time = exit_time;
-        parking.value = compare * VALORPERHOUR;
-        parking.fk_car_id = car_id;
-        parking.fk_vacancy_id = vacancy_id;
+        parking.entry_time = this.getCurrentDate();
+        parking.value = 0;
+        parking.car_id = car_id;
+        parking.vacancy_id = vacancy_id;
 
-        const query = "INSERT INTO parking (id, entry_time, exit_time, value, fk_car_id, fk_vacancy_id) VALUES ($1, $2, $3, $4, $5, $6)";
-        const values = [parking.id, parking.entry_time, parking.exit_time, parking.value, parking.fk_car_id, parking.fk_vacancy_id];
+        const query = "INSERT INTO parking (id, entry_time, value, car_id, vacancy_id) VALUES ($1, $2, $3, $4, $5)";
+        const values = [parking.id, parking.entry_time, parking.value, parking.car_id, parking.vacancy_id];
 
         await client
             .query(query, values)
             .then(() => console.log("Parking was created!"))
             .catch((error) => console.error(error));
 
-        await vacancyService.updateAvailableVacancy(vacancy_id);
+        await vacancyService.updateAvailableVacancy(vacancy_id, false);
     }
 
-    convertToUTC(date: Date): string {
-        return dayjs(date).utc().local().format();
+    async unparking(vacancy_id: string) {
+        const vacancyService = new VacanciesServices();
+
+        const vacancy = await vacancyService.findByID(vacancy_id);
+
+        if (!vacancy) {
+            throw new Error("This Vacancy ID doesn't exist!");
+        }
+
+        const parking = await this.verifyVacancyIdParking(vacancy_id);
+
+        if (!parking) {
+            throw new Error("There is no car parked in the vacancy!");
+        }
+
+        const currentDate = this.getCurrentDate();
+        const currentHour = this.getHour(currentDate);
+
+        const entryTime = await this.getEntryTimeParking(parking.id);
+        const hour = this.getHour(entryTime);
+
+        let hours = currentHour - hour;
+
+        if (hours == 0) {
+            hours = 1;
+        }
+
+        const value = hours * VALORPERHOUR;
+
+        await this.updateValueAndExitTimeParking(parking.id, value, currentDate);
+        await vacancyService.updateAvailableVacancy(vacancy_id, true);
     }
 
-    compareHours(start_date: Date, end_date: Date): number {
-        const start_date_utc = this.convertToUTC(start_date);
-        const end_date_utc = this.convertToUTC(end_date);
+    async verifyVacancyIdParking(vacancy_id: string) {
+        const vacancy = "SELECT id FROM parking WHERE vacancy_id = $1";
 
-        return dayjs(end_date_utc).diff(start_date_utc, "hours");
+        const parking = await client.query(vacancy, [vacancy_id]);
+        return parking.rows[0];
     }
 
-    getEntryTime(entry_time: Date): number {
-        return dayjs(entry_time).get("hour");;
+    async getEntryTimeParking(parking_id: string) {
+        const query = "SELECT entry_time FROM parking WHERE id = $1";
+
+        const parking = await client.query(query, [parking_id]);
+        return parking.rows[0].entry_time;
     }
 
-    getExitTime(exit_time: Date): number {
-        return dayjs(exit_time).get("hour");
+    async updateValueAndExitTimeParking(parking_id: string, value: number, exit_time: Date) {
+        const query = "UPDATE parking SET value = $1, exit_time = $2 WHERE id = $3";
+        const values = [value, exit_time, parking_id];
+
+        await client
+            .query(query, values)
+            .then(() => console.log("Parking was updated!"))
+            .catch((error) => console.error(error));
     }
 
-    getEntryDay(entry_time: Date): number {
-        return dayjs(entry_time).get("date");
+    getCurrentDate(): Date {
+        return dayjs().toDate();
     }
 
-    getExitDay(exit_time: Date): number {
-        return dayjs(exit_time).get("date");
-    }
-
-    getCurrentDay(): number {
-        return dayjs().date();
-    }
-
-    getCurrentDate() {
-        return dayjs().format('YYYY/MM/DD');
+    getHour(timestamp: Date): number {
+        return dayjs(timestamp).get("hour");;
     }
 }
 
