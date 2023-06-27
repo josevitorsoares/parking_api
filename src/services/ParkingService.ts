@@ -25,11 +25,11 @@ class ParkingService {
         const vacancyService = new VacanciesServices();
         const carsService = new CarsServices();
 
-        // const allAvailableVacancies = await vacancyService.verifyAllAvailableVacancies();
+        const allAvailableVacancies = await vacancyService.verifyAllAvailableVacancies();
 
-        // if (allAvailableVacancies == ALLVACANCIES) {
-        //     throw new Error("There are no vacancies available!")
-        // }
+        if (allAvailableVacancies == ALLVACANCIES) {
+            throw new Error("There are no vacancies available!")
+        }
 
         const carID = await carsService.findByID(car_id);
         const vacancyID = await vacancyService.findByID(vacancy_id);
@@ -124,7 +124,7 @@ class ParkingService {
     }
 
     getHour(timestamp: Date): number {
-        return dayjs(timestamp).get("hour");;
+        return dayjs(timestamp).get("hour");
     }
 }
 

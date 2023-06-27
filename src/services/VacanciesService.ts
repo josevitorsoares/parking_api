@@ -40,13 +40,12 @@ class VacanciesServices {
         return vacancy.rows[0];
     }
 
-    // async verifyAllAvailableVacancies(): Promise<number>{
-    //     const query = "SELECT COUNT(ID) FROM vacancies GROUP BY available HAVING available = false";
+    async verifyAllAvailableVacancies(): Promise<number>{
+        const query = "SELECT available FROM vacancies WHERE available = false";
 
-    //     const vacancies = await client.query(query);
-    //     console.log(vacancies.rows[0]);
-    //     return vacancies.rows[0];
-    // }
+        const vacancies = await client.query(query);
+        return vacancies.rowCount;
+    }
 }
 
 export { VacanciesServices };
