@@ -38,6 +38,12 @@ class ParkingService {
             throw new Error("Not exist this Car ID or not exist this Vacancy ID!");
         }
 
+        const carIdParking = await this.verifyCarIdParking(car_id);
+
+        if (carIdParking) {
+            throw new Error("That car already parked!");
+        }
+
         const vacancyAvailable = await vacancyService.verifyAvaliableVacancy(vacancy_id);
 
         if (!vacancyAvailable) {
@@ -99,6 +105,13 @@ class ParkingService {
         const vacancy = "SELECT id FROM parking WHERE vacancy_id = $1";
 
         const parking = await client.query(vacancy, [vacancy_id]);
+        return parking.rows[0];
+    }
+
+    async verifyCarIdParking(car_id: string) {
+        const car = "SELECT id FROM parking WHERE car_id = $1 AND value = 0";
+
+        const parking = await client.query(car, [car_id]);
         return parking.rows[0];
     }
 
