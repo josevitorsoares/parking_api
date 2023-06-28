@@ -5,6 +5,12 @@ class VacanciesServices {
     async create(vacancy_number: string): Promise<void>{
         const vacancies = new Vacancies();
 
+        const vacancyNumber = await this.verifyVacancyNumber(vacancy_number);
+
+        if (vacancyNumber) {
+            throw new Error("Vacancy number already exists");
+        }
+
         vacancies.vacancy_number = vacancy_number;
 
         const query = "INSERT INTO vacancies (id, vacancy_number, available) VALUES ($1, $2, $3)";
@@ -45,6 +51,13 @@ class VacanciesServices {
 
         const vacancies = await client.query(query);
         return vacancies.rowCount;
+    }
+
+    async verifyVacancyNumber(vacancy_number: string){
+        const query = "SELECT vacancy_number FROM vacancies WHERE vacancy_number = $1";
+
+        const vacancy = await client.query(query, [vacancy_number]);
+        return vacancy.rows[0];
     }
 }
 
