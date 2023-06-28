@@ -1,9 +1,15 @@
 import { client } from "../../database/db";
-import { Cars } from "../models/Carros";
+import { Cars } from "../models/Cars";
 
 class CarsServices {
     async create(owner: string, license_plate: string, telephone: string): Promise<void>{
         const car = new Cars();
+
+        const carLicensePlate = await this.verifyLicensePlate(license_plate);
+        
+        if (carLicensePlate) {
+            throw new Error("There is already a car with this license plate!");
+        }
 
         car.owner = owner;
         car.license_plate = license_plate;
@@ -22,6 +28,13 @@ class CarsServices {
         const query = "SELECT id FROM cars WHERE id = $1";
 
         const car = await client.query(query, [id]);
+        return car.rows[0];
+    }
+
+    async verifyLicensePlate(license_plate: string){
+        const query = "SELECT license_plate FROM cars WHERE license_plate = $1";
+
+        const car = await client.query(query, [license_plate]);
         return car.rows[0];
     }
 }
