@@ -9,9 +9,10 @@ import { CarsServices } from "./CarsServices";
 dayjs.extend(utc);
 
 const VALORPERHOUR = 20; // Value per 1h on parking
-const OPENINGTIME = 9; // Opening time
+const OPENINGTIME = 6; // Opening time
 const CLOSETIME = 18; // Closing time
 const ALLVACANCIES = 20; // Total parking vacancies
+const MINIMUMHOURS = 1; //Minimum number of hours
 
 class ParkingService {
     async create(car_id: string, vacancy_id: string): Promise<void> {
@@ -69,6 +70,13 @@ class ParkingService {
     }
 
     async unparking(vacancy_id: string) {
+        const currentDate = this.getCurrentDate();
+        const currentHour = this.getHour(currentDate);
+
+        if (currentHour < OPENINGTIME || currentHour > CLOSETIME) {
+            throw new Error("Hours outside opening hours");
+        }
+
         const vacancyService = new VacanciesServices();
 
         const vacancy = await vacancyService.findByID(vacancy_id);
@@ -83,26 +91,21 @@ class ParkingService {
             throw new Error("There is no car parked in the vacancy!");
         }
 
-        const currentDate = this.getCurrentDate();
-        const currentHour = this.getHour(currentDate);
-
         const entryTime = await this.getEntryTimeParking(parking.id);
-        const hour = this.getHour(entryTime);
+        let hour = this.compareInHours(entryTime, currentDate);
 
-        let hours = currentHour - hour;
-
-        if (hours == 0) {
-            hours = 1;
+        if (hour < MINIMUMHOURS) {
+            hour = MINIMUMHOURS;
         }
 
-        const value = hours * VALORPERHOUR;
+        const value = hour * VALORPERHOUR;
 
         await this.updateValueAndExitTimeParking(parking.id, value, currentDate);
         await vacancyService.updateAvailableVacancy(vacancy_id, true);
     }
 
     async verifyVacancyIdParking(vacancy_id: string) {
-        const vacancy = "SELECT id FROM parking WHERE vacancy_id = $1";
+        const vacancy = "SELECT id FROM parking WHERE vacancy_id = $1 AND value = 0";
 
         const parking = await client.query(vacancy, [vacancy_id]);
         return parking.rows[0];
@@ -138,6 +141,17 @@ class ParkingService {
 
     getHour(timestamp: Date): number {
         return dayjs(timestamp).get("hour");
+    }
+
+    convertToUTC(date: Date): string {
+        return dayjs(date).utc().local().format();
+    }
+
+    compareInHours(star_date: Date, end_date: Date): number {
+        const start_date_utc = this.convertToUTC(star_date);
+        const end_date_utc = this.convertToUTC(end_date);
+
+        return dayjs(end_date_utc).diff(start_date_utc, "hours");
     }
 }
 
