@@ -1,0 +1,156 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Parking API",
+        "description": "A parking API looking to solve a challenge.",
+        "contact": {
+            "name": "API Support",
+            "email": "support@example.com",
+            "version": "1.0.0"
+        }
+    },
+    "paths": {
+        "/cars/create": {
+            "post": {
+                "tags": [
+                    "Cars"
+                ],
+                "summary": "Create a new Car",
+                "description": "Route for creating a new car",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "owner": {
+                                        "type": "string"
+                                    },
+                                    "license_plate": {
+                                        "type": "string"
+                                    },
+                                    "telephone": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "example": {
+                                "owner": "Enter the name of the owner",
+                                "license_plate": "Enter the license plate",
+                                "telephone": "Enter the phone number"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Sucess"
+                    },
+                    "500": {
+                        "description": "There is already a car with this license plate!"
+                    }
+                }
+            }
+        },
+        "/vacancies/create": {
+            "post": {
+                "tags": [
+                    "Vacancies"
+                ],
+                "summary": "Create a new Vacancy",
+                "description": "Route for creating a new vacancy",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "vacancy_number": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "example": {
+                                "vacancy_number": "Enter a 'name' for the vacancy"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Sucess"
+                    },
+                    "500": {
+                        "description": "Vacancy number already exists"
+                    }
+                }
+            }
+        },
+        "/parking/create": {
+            "post": {
+                "tags": [
+                    "Parking"
+                ],
+                "summary": "Create a new parking",
+                "description": "Route for creating a new parking",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "car_id": {
+                                        "type": "string"
+                                    },
+                                    "vacancy_id": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "example": {
+                                "car_id": "Enter a car ID",
+                                "vacancy_id": "Enter a vacancy ID"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Sucess"
+                    }
+                }
+            }
+        },
+        "/parking/unparking": {
+            "post": {
+                "tags": [
+                    "Parking"
+                ],
+                "summary": "Unparking",
+                "description": "Route for unparking",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "vacancy_id": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "example": {
+                                "vacancy_id": "Enter a vacancy ID"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Sucess"
+                    }
+                }
+            }
+        }
+    }
+}
