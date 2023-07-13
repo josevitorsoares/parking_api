@@ -8,6 +8,7 @@ Uma API de estacionamento buscando resolver um desafio proposto pelo meu amigo [
     - [Critérios](#critérios)
   - [Status do Projeto](#status-do-projeto)
   - [Tecnologias Utilizadas](#tecnologias-utilizadas)
+  - [Uso](#uso)
   - [Autor](#autor)
 
 ## Desafio 🎯
@@ -43,6 +44,18 @@ O desafio foi concluído, mas há sempre algo que possa melhorar 🚀.
 - `Swagger UI`
 - `dotenv`
 - `uuidV4`
+
+## Uso
+
+1. Realize a clonagem do repositório utilizando: `git clone https://github.com/josevitorsoares/parking_api.git`.
+
+2. Utilize o `pgAdmin4` ou programa semelhante para inicar um novo banco de dados.
+
+3. Crie o arquivo `.env`, na raiz da pasta do projeto, com base nos exemplos forneciodos através do arquivo `.env.example`.
+
+4. Antes de inciar a API, é necessário executar no terminal o comando `npm run db_init` para criação das tabelas no banco de dados.
+
+5. Após a criação das tabelas, é possível inicia a API executando o comando no terminal: `npm run dev`.
 
 ## Autor
 
