@@ -48,7 +48,7 @@ const createTables = async () => {
         client.end();
         
     } catch (error) {
-        console.error('Error creating tables: ', error);
+        console.error("Error creating tables: ", error);
     }
 };
 
