@@ -1,6 +1,6 @@
 import { v4 as uuidV4 } from "uuid";
 
-class Parkin {
+export class Parkin {
     id: string;
     entry_time: Date;
     exit_time: Date;
@@ -14,5 +14,3 @@ class Parkin {
         }
     }
 }
-
-export { Parkin };

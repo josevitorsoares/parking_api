@@ -1,6 +1,6 @@
 import { v4 as uuidV4 } from "uuid";
 
-class Vacancies {
+export class Vacancies {
     id?: string;
     vacancy_number: string;
     available: boolean;
@@ -12,5 +12,3 @@ class Vacancies {
         }
     }
 }
-
-export { Vacancies };
