@@ -105,6 +105,16 @@ export class ParkingsRepository implements IParking {
         await vacancyRepository.updateAvailableVacancy(vacancy_id, true);
     }
 
+    async sumAmountOnDay(): Promise<number> {
+        const currentDate = this.getCurrentDate();
+
+        const query = "SELECT SUM(value) FROM parking WHERE DATE(exit_time) = DATE($1)";
+
+        const parking = await client.query(query, [currentDate]);
+
+        return parking.rows[0];
+    }
+
     async verifyVacancyIdParking(vacancy_id: string) {
         const vacancy = "SELECT id FROM parking WHERE vacancy_id = $1 AND value = 0";
 
