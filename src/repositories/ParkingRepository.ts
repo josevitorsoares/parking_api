@@ -10,4 +10,5 @@ export interface IParking{
     getHour(timestamp: Date): number;
     convertToUTC(date: Date): string;
     compareInHours(star_date: Date, end_date: Date): number;
+    sumAmountOnDay(): Promise<number>;
 }
