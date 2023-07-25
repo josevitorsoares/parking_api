@@ -6,6 +6,7 @@ import { Parkin } from "../../models/Parking";
 import { IParking } from "../ParkingRepository";
 import { VacanciesRepository } from "./ConnectionVacanciesRepository";
 import { CarsRepository } from "./ConnectionCarsRepository";
+import { AppError } from "../../http/middlwares/AppError";
 
 dayjs.extend(utc);
 
@@ -21,7 +22,7 @@ export class ParkingsRepository implements IParking {
         const hour = this.getHour(currentDate);
 
         if (hour < OPENINGTIME || hour > CLOSETIME) {
-            throw new Error("Hours outside opening hours");
+            throw new AppError("Hours outside opening hours. Please try again during opening hours.", 403);
         }
 
         const vacancyRepository = new VacanciesRepository();
@@ -30,26 +31,26 @@ export class ParkingsRepository implements IParking {
         const allAvailableVacancies = await vacancyRepository.verifyAllAvailableVacancies();
 
         if (allAvailableVacancies == ALLVACANCIES) {
-            throw new Error("There are no vacancies available!");
+            throw new AppError("There are no vacancies available. Please try again later.", 503);
         }
 
         const carID = await carsRepository.findByID(car_id);
         const vacancyID = await vacancyRepository.findByID(vacancy_id);
 
         if (!carID || !vacancyID) {
-            throw new Error("Not exist this Car ID or not exist this Vacancy ID!");
+            throw new AppError("Not exist this Car ID or not exist this Vacancy ID.", 404);
         }
 
         const carIdParking = await this.verifyCarIdParking(car_id);
 
         if (carIdParking) {
-            throw new Error("That car already parked!");
+            throw new AppError("That car already parked!", 409);
         }
 
         const vacancyAvailable = await vacancyRepository.verifyAvaliableVacancy(vacancy_id);
 
         if (!vacancyAvailable) {
-            throw new Error("This vacancy doesn't available!");
+            throw new AppError("This vacancy doesn't available.", 409);
         }
 
         const parking = new Parkin();
@@ -75,7 +76,7 @@ export class ParkingsRepository implements IParking {
         const currentHour = this.getHour(currentDate);
 
         if (currentHour < OPENINGTIME || currentHour > CLOSETIME) {
-            throw new Error("Hours outside opening hours");
+            throw new AppError("Hours outside opening hours. Please try again during opening hours.", 403);
         }
 
         const vacancyRepository = new VacanciesRepository();
@@ -83,13 +84,13 @@ export class ParkingsRepository implements IParking {
         const vacancy = await vacancyRepository.findByID(vacancy_id);
 
         if (!vacancy) {
-            throw new Error("This Vacancy ID doesn't exist!");
+            throw new AppError("This Vacancy ID doesn't exist.", 404);
         }
 
         const parking = await this.verifyVacancyIdParking(vacancy_id);
 
         if (!parking) {
-            throw new Error("There is no car parked in the vacancy!");
+            throw new AppError("There is no car parked in the vacancy.", 409);
         }
 
         const entryTime = await this.getEntryTimeParking(parking.id);
