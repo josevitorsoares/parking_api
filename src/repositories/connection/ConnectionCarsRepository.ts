@@ -2,6 +2,7 @@ import { client } from "../../../database/db";
 import { ICars } from "../CarsRepository";
 import { Cars } from "../../models/Cars";
 import { AppError } from "../../http/middlwares/AppError";
+import { QueryResult } from "pg";
 
 export class CarsRepository implements ICars{
     async create(owner: string, license_plate: string, telephone: string): Promise<void>{
@@ -39,5 +40,13 @@ export class CarsRepository implements ICars{
 
         const car = await client.query(query, [license_plate]);
         return car.rows[0];
+    }
+
+    async listAllCars(): Promise<QueryResult<Cars>[]> {
+        const query = "SELECT * FROM cars";
+
+        const cars = await client.query(query);
+
+        return cars.rows;
     }
 }
