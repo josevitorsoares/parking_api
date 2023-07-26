@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 
 import { client } from "../../../database/db";
-import { Parkin } from "../../models/Parking";
+import { Parking } from "../../models/Parking";
 import { IParking } from "../ParkingRepository";
 import { VacanciesRepository } from "./ConnectionVacanciesRepository";
 import { CarsRepository } from "./ConnectionCarsRepository";
@@ -53,7 +53,7 @@ export class ParkingsRepository implements IParking {
             throw new AppError("This vacancy doesn't available.", 409);
         }
 
-        const parking = new Parkin();
+        const parking = new Parking();
 
         parking.entry_time = this.getCurrentDate();
         parking.value = 0;
@@ -63,15 +63,15 @@ export class ParkingsRepository implements IParking {
         const query = "INSERT INTO parking (id, entry_time, value, car_id, vacancy_id) VALUES ($1, $2, $3, $4, $5)";
         const values = [parking.id, parking.entry_time, parking.value, parking.car_id, parking.vacancy_id];
 
-        await client
-            .query(query, values)
-            .then(() => console.log("Parking was created!"))
-            .catch((error) => console.error(error));
-
-        await vacancyRepository.updateAvailableVacancy(vacancy_id, false);
+        try {
+            await client.query(query, values).then(() => console.log("Parking was created!")).catch((error) => console.error(error));
+            await vacancyRepository.updateAvailableVacancy(vacancy_id, false);   
+        } catch (error) {
+            throw new AppError(`${error}`);
+        }
     }
 
-    async unparking(vacancy_id: string) {
+    async unparking(vacancy_id: string): Promise<void>{
         const currentDate = this.getCurrentDate();
         const currentHour = this.getHour(currentDate);
 
@@ -102,8 +102,12 @@ export class ParkingsRepository implements IParking {
 
         const value = hour * VALORPERHOUR;
 
-        await this.updateValueAndExitTimeParking(parking.id, value, currentDate);
-        await vacancyRepository.updateAvailableVacancy(vacancy_id, true);
+        try {
+            await vacancyRepository.updateAvailableVacancy(vacancy_id, true);
+            await this.updateValueAndExitTimeParking(parking.id, value, currentDate);
+        } catch (error) {
+            throw new AppError(`${error}`);
+        }
     }
 
     async sumAmountOnDay(): Promise<number> {
@@ -116,21 +120,21 @@ export class ParkingsRepository implements IParking {
         return parking.rows[0];
     }
 
-    async verifyVacancyIdParking(vacancy_id: string) {
+    async verifyVacancyIdParking(vacancy_id: string): Promise<Parking> {
         const vacancy = "SELECT id FROM parking WHERE vacancy_id = $1 AND value = 0";
 
         const parking = await client.query(vacancy, [vacancy_id]);
         return parking.rows[0];
     }
 
-    async verifyCarIdParking(car_id: string) {
+    async verifyCarIdParking(car_id: string): Promise<Parking> {
         const car = "SELECT id FROM parking WHERE car_id = $1 AND value = 0";
 
         const parking = await client.query(car, [car_id]);
         return parking.rows[0];
     }
 
-    async getEntryTimeParking(parking_id: string) {
+    async getEntryTimeParking(parking_id: string): Promise<Date> {
         const query = "SELECT entry_time FROM parking WHERE id = $1";
 
         const parking = await client.query(query, [parking_id]);
@@ -141,10 +145,11 @@ export class ParkingsRepository implements IParking {
         const query = "UPDATE parking SET value = $1, exit_time = $2 WHERE id = $3";
         const values = [value, exit_time, parking_id];
 
-        await client
-            .query(query, values)
-            .then(() => console.log("Parking was updated!"))
-            .catch((error) => console.error(error));
+        try {
+            await client.query(query, values).then(() => console.log("Parking was updated!")).catch((error) => console.error(error));
+        } catch (error) {
+            throw new AppError(`${error}`);
+        }
     }
 
     getCurrentDate(): Date {

@@ -25,7 +25,7 @@ export class VacanciesRepository implements IVacancies{
         }
     }
 
-    async updateAvailableVacancy(vacancy_id: string, status: boolean) {
+    async updateAvailableVacancy(vacancy_id: string, status: boolean): Promise<void>{
         const query = "UPDATE vacancies SET available = $1 WHERE id = $2";
         const values = [status, vacancy_id];
 
@@ -36,14 +36,14 @@ export class VacanciesRepository implements IVacancies{
         }
     }
 
-    async findByID(id: string) {
+    async findByID(id: string): Promise<Vacancies> {
         const query = "SELECT id FROM vacancies WHERE id = $1";
 
         const vacancy = await client.query(query, [id]);
         return vacancy.rows[0];
     }
 
-    async verifyAvaliableVacancy(vacancy_id: string) {
+    async verifyAvaliableVacancy(vacancy_id: string): Promise<Vacancies> {
         const query = "SELECT id FROM vacancies WHERE id = $1 AND available = true";
 
         const vacancy = await client.query(query, [vacancy_id]);
@@ -57,7 +57,7 @@ export class VacanciesRepository implements IVacancies{
         return vacancies.rowCount;
     }
 
-    async verifyVacancyNumber(vacancy_number: string) {
+    async verifyVacancyNumber(vacancy_number: string): Promise<Vacancies> {
         const query = "SELECT vacancy_number FROM vacancies WHERE vacancy_number = $1";
 
         const vacancy = await client.query(query, [vacancy_number]);
