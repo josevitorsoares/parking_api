@@ -43,7 +43,7 @@ export class VacanciesRepository implements IVacancies{
         return vacancy.rows[0];
     }
 
-    async verifyAvaliableVacancy(vacancy_id: string): Promise<Vacancies> {
+    async verifyAvailableVacancy(vacancy_id: string): Promise<Vacancies> {
         const query = "SELECT id FROM vacancies WHERE id = $1 AND available = true";
 
         const vacancy = await client.query(query, [vacancy_id]);
@@ -62,5 +62,13 @@ export class VacanciesRepository implements IVacancies{
 
         const vacancy = await client.query(query, [vacancy_number]);
         return vacancy.rows[0];
+    }
+
+    async listAvailableVacancies(): Promise<Vacancies[]>{
+        const query = "SELECT * FROM vacancies WHERE available = TRUE";
+
+        const vacancies = await client.query(query);
+        console.log(vacancies.rows);
+        return vacancies.rows;
     }
 }
