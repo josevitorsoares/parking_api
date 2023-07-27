@@ -2,7 +2,6 @@ import { client } from "../../../database/db";
 import { ICars } from "../CarsRepository";
 import { Cars } from "../../models/Cars";
 import { AppError } from "../../http/middlwares/AppError";
-import { QueryResult } from "pg";
 
 export class CarsRepository implements ICars{
     async create(owner: string, license_plate: string, telephone: string): Promise<void>{
@@ -28,21 +27,21 @@ export class CarsRepository implements ICars{
         }
     }
     
-    async findByID(id: string) {
+    async findByID(id: string): Promise<Cars> {
         const query = "SELECT id FROM cars WHERE id = $1";
 
         const car = await client.query(query, [id]);
         return car.rows[0];
     }
 
-    async verifyLicensePlate(license_plate: string){
+    async verifyLicensePlate(license_plate: string): Promise<Cars>{
         const query = "SELECT license_plate FROM cars WHERE license_plate = $1";
 
         const car = await client.query(query, [license_plate]);
         return car.rows[0];
     }
 
-    async listAllCars(): Promise<QueryResult<Cars>[]> {
+    async listAllCars(): Promise<Cars[]> {
         const query = "SELECT * FROM cars";
 
         const cars = await client.query(query);
