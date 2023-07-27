@@ -7,5 +7,5 @@ export async function listCars(request: Request, response: Response): Promise<Re
 
     const result = await listCarsUseCase.execute();
 
-    return response.json(result);
+    return response.json(result.cars);
 }
