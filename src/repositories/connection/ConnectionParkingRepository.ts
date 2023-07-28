@@ -149,6 +149,11 @@ export class ParkingsRepository implements IParking {
 
         const parking = await client.query(query, [currentDate]);
 
+        if (!parking.rows[0]) {
+            console.log("Entrou no IF");
+        }
+        console.log("Depois do IF");
+
         return parking.rows[0];
     }
 
