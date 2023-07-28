@@ -137,8 +137,8 @@ export class ParkingsRepository implements IParking {
 
         try {
             await client.query(query, values).then(() => console.log("Parking was updated!")).catch((error) => console.error(error));
-        } catch (error) {
-            throw new AppError(`${error}`);
+        } catch (error) { //TODO JSON.stringify(error)
+            throw new AppError(`${error}`); // this can result in someting like object: object
         }
     }
 
@@ -147,10 +147,13 @@ export class ParkingsRepository implements IParking {
 
         const query = "SELECT SUM(value) FROM parking WHERE DATE(exit_time) = DATE($1)";
 
-        const parking = await client.query(query, [currentDate]);
-
-        if (!parking.rows[0]) {
+        // desestructuring data
+        const { rows: [{sum}] } = await client.query(query, [currentDate]);
+        // const { rows: [result]}
+        // now you can validade just the value thats important for this case
+        if (!sum) {
             console.log("Entrou no IF");
+            throw new AppError("No data");
         }
         console.log("Depois do IF");
 
