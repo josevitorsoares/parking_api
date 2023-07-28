@@ -47,7 +47,7 @@ export class ParkingsRepository implements IParking {
             throw new AppError("That car already parked!", 409);
         }
 
-        const vacancyAvailable = await vacancyRepository.verifyAvaliableVacancy(vacancy_id);
+        const vacancyAvailable = await vacancyRepository.verifyAvailableVacancy(vacancy_id);
 
         if (!vacancyAvailable) {
             throw new AppError("This vacancy doesn't available.", 409);
@@ -110,16 +110,6 @@ export class ParkingsRepository implements IParking {
         }
     }
 
-    async sumAmountOnDay(): Promise<number> {
-        const currentDate = this.getCurrentDate();
-
-        const query = "SELECT SUM(value) FROM parking WHERE DATE(exit_time) = DATE($1)";
-
-        const parking = await client.query(query, [currentDate]);
-
-        return parking.rows[0];
-    }
-
     async verifyVacancyIdParking(vacancy_id: string): Promise<Parking> {
         const vacancy = "SELECT id FROM parking WHERE vacancy_id = $1 AND value = 0";
 
@@ -150,6 +140,23 @@ export class ParkingsRepository implements IParking {
         } catch (error) {
             throw new AppError(`${error}`);
         }
+    }
+
+    async sumAmountOnDay(): Promise<number> {
+        const currentDate = this.getCurrentDate();
+
+        const query = "SELECT SUM(value) FROM parking WHERE DATE(exit_time) = DATE($1)";
+
+        const parking = await client.query(query, [currentDate]);
+
+        return parking.rows[0];
+    }
+
+    async listActiveParkings(): Promise<Parking[]> {
+        const query = "SELECT * FROM parking WHERE value = 0";
+
+        const parking = await client.query(query);
+        return parking.rows;
     }
 
     getCurrentDate(): Date {
