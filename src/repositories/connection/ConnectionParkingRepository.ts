@@ -149,11 +149,6 @@ export class ParkingsRepository implements IParking {
 
         const parking = await client.query(query, [currentDate]);
 
-        if (!parking.rows[0]) {
-            console.log("Entrou no IF");
-        }
-        console.log("Depois do IF");
-
         return parking.rows[0];
     }
 
@@ -162,6 +157,13 @@ export class ParkingsRepository implements IParking {
 
         const parking = await client.query(query);
         return parking.rows;
+    }
+
+    async listAllParkings(): Promise<Parking[]>{
+        const query = "SELECT * FROM parking";
+
+        const parkings = await client.query(query);
+        return parkings.rows;
     }
 
     getCurrentDate(): Date {
