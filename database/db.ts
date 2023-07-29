@@ -14,10 +14,10 @@ const client = new Client({
 client
     .connect()
     .then(() => {
-        console.log('Data Source has been inicialized');
+        console.log("Data Source has been inicialized");
     })
     .catch((err)=>{
-        console.error('Error on Data Source initialization: ', err);
+        console.error("Error on Data Source initialization: ", err);
     });
 
 export { client };

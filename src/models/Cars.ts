@@ -1,6 +1,6 @@
-import { v4 as uuidV4 } from "uuid"
+import { v4 as uuidV4 } from "uuid";
 
-class Cars {
+export class Cars {
     id: string;
     owner: string;
     license_plate: string;
@@ -12,5 +12,3 @@ class Cars {
         }
     }
 }
-
-export { Cars };
