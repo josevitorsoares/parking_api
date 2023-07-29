@@ -9,6 +9,7 @@ export interface IParking{
     updateValueAndExitTimeParking(parking_id: string, value: number, exit_time: Date): Promise<void>;
     sumAmountOnDay(): Promise<number>;
     listActiveParkings(): Promise<Parking[]>;
+    listAllParkings(): Promise<Parking[]>;
     getCurrentDate(): Date;
     getHour(timestamp: Date): number;
     convertToUTC(date: Date): string;
