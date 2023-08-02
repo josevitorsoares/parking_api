@@ -1,6 +1,6 @@
 import { Parking } from "../models/Parking";
 
-export interface IParking{
+export interface IParkingRepository{
     create(car_id: string, vacancy_id: string): Promise<void>;
     unparking(vacancy_id: string): Promise<void>;
     verifyVacancyIdParking(vacancy_id: string): Promise<Parking>;
