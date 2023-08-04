@@ -1,38 +1,32 @@
 import { client } from "../../../database/db";
-import { IVacancies } from "../VacanciesRepository";
+import { IVacanciesRepository } from "../VacanciesRepository";
 import { Vacancies } from "../../models/Vacancies";
 import { AppError } from "../../http/middlwares/AppError";
 
-export class VacanciesRepository implements IVacancies{
+export class VacanciesRepository implements IVacanciesRepository {
     async create(vacancy_number: string): Promise<void> {
-        const vacancies = new Vacancies();
-
-        const vacancyNumber = await this.verifyVacancyNumber(vacancy_number);
-
-        if (vacancyNumber) {
-            throw new AppError("Vacancy number already exists", 422);
-        }
-
-        vacancies.vacancy_number = vacancy_number;
-
-        const query = "INSERT INTO vacancies (id, vacancy_number, available) VALUES ($1, $2, $3)";
-        const values = [vacancies.id, vacancies.vacancy_number, vacancies.available];
-
         try {
+            const vacancies = new Vacancies();
+
+            vacancies.vacancy_number = vacancy_number;
+
+            const query = "INSERT INTO vacancies (id, vacancy_number, available) VALUES ($1, $2, $3)";
+            const values = [vacancies.id, vacancies.vacancy_number, vacancies.available];
+
             await client.query(query, values).then(() => console.log("Vacancy was created!")).catch((error) => console.error(error));
         } catch (error) {
-            console.error("Error creating Vacancy: ", error);
+            throw new AppError(`Error creating Vacancy: ${error}`);
         }
     }
 
-    async updateAvailableVacancy(vacancy_id: string, status: boolean): Promise<void>{
-        const query = "UPDATE vacancies SET available = $1 WHERE id = $2";
-        const values = [status, vacancy_id];
-
+    async updateAvailableVacancy(vacancy_id: string, status: boolean): Promise<void> {
         try {
+            const query = "UPDATE vacancies SET available = $1 WHERE id = $2";
+            const values = [status, vacancy_id];
+
             await client.query(query, values).then(() => console.log("Vacancy was updated")).catch((error) => console.error(error));
         } catch (error) {
-            console.error("Error updating Vacancy: ", error);
+            throw new AppError(`Error creating Vacancy: ${error}`);
         }
     }
 
@@ -64,11 +58,10 @@ export class VacanciesRepository implements IVacancies{
         return vacancy.rows[0];
     }
 
-    async listAvailableVacancies(): Promise<Vacancies[]>{
+    async listAvailableVacancies(): Promise<Vacancies[]> {
         const query = "SELECT * FROM vacancies WHERE available = TRUE";
 
         const vacancies = await client.query(query);
-        console.log(vacancies.rows);
         return vacancies.rows;
     }
 }
