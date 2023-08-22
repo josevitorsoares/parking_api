@@ -3,9 +3,9 @@ import { makeCreateVacancyUseCase } from "../../../useCases/factories/makeCreate
 
 export async function create(request: Request, response: Response): Promise<Response> {
     const { vacancy_number } = request.body;
-    const vacanciesServices = makeCreateVacancyUseCase();
+    const createVacancyUseCase = makeCreateVacancyUseCase();
 
-    await vacanciesServices.execute(vacancy_number);
+    await createVacancyUseCase.execute({ vacancy_number });
 
     return response.send();
 }
