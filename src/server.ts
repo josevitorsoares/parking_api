@@ -4,7 +4,7 @@ import swaggerUi from "swagger-ui-express";
 import swaggerFile from "./swagger.json";
 
 import { client } from "../database/db";
-import { AppError } from "./http/middlwares/AppError";
+import { AppError } from "./http/middlewares/AppError";
 import { router } from "./app.routes";
 client;
 

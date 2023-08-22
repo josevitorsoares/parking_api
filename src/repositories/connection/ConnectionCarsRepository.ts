@@ -1,7 +1,7 @@
 import { client } from "../../../database/db";
 import { ICarsRepository } from "../CarsRepository";
 import { Cars } from "../../models/Cars";
-import { AppError } from "../../http/middlwares/AppError";
+import { AppError } from "../../http/middlewares/AppError";
 
 export class CarsRepository implements ICarsRepository {
     async create(owner: string, license_plate: string, telephone: string): Promise<void> {

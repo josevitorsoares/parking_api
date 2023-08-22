@@ -1,7 +1,7 @@
 import { client } from "../../../database/db";
 import { IVacanciesRepository } from "../VacanciesRepository";
 import { Vacancies } from "../../models/Vacancies";
-import { AppError } from "../../http/middlwares/AppError";
+import { AppError } from "../../http/middlewares/AppError";
 
 export class VacanciesRepository implements IVacanciesRepository {
     async create(vacancy_number: string): Promise<void> {

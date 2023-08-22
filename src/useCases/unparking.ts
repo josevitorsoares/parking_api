@@ -1,4 +1,4 @@
-import { AppError } from "../http/middlwares/AppError";
+import { AppError } from "../http/middlewares/AppError";
 import { IParkingRepository } from "../repositories/ParkingRepository";
 import { IVacanciesRepository } from "../repositories/VacanciesRepository";
 
