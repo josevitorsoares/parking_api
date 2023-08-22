@@ -1,11 +1,15 @@
 import { ParkingsRepository } from "../repositories/connection/ConnectionParkingRepository";
 
-export class SumAmountOnDayUseCase {
-    constructor(private parkingsRepository: ParkingsRepository){}
-    
-    async execute() {
-        const result = await this.parkingsRepository.sumAmountOnDay();
+interface SumAmountOnDayUseCaseResponse {
+    sumAmount: number,
+}
 
-        return result;
+export class SumAmountOnDayUseCase {
+    constructor(private parkingsRepository: ParkingsRepository) { }
+
+    async execute(): Promise<SumAmountOnDayUseCaseResponse> {
+        const sumAmount = await this.parkingsRepository.sumAmountOnDay();
+
+        return { sumAmount };
     }
 }
