@@ -19,14 +19,14 @@ export class CreateParkingUseCase {
         private carsRepository: ICarsRepository
     ) {}
 
-    async execute({ car_id, vacancy_id }: CreateParkinRequest) {
+    async execute({ car_id, vacancy_id }: CreateParkinRequest): Promise<void> {
         const currentDate = this.parkingsRepository.getCurrentDate();
         const hour = this.parkingsRepository.getHour(currentDate);
 
         if (hour < OPENINGTIME || hour > CLOSETIME) {
             throw new AppError("Hours outside opening hours. Please try again during opening hours.", 403);
         }
-        console.log(this.vacanciesRepository);
+
         const allAvailableVacancies = await this.vacanciesRepository.verifyAllAvailableVacancies();
 
         if (allAvailableVacancies == ALLVACANCIES) {
@@ -53,6 +53,6 @@ export class CreateParkingUseCase {
         }
 
         await this.parkingsRepository.create(car_id, vacancy_id);
-        await this.vacanciesRepository.updateAvailableVacancy(vacancy_id, false);   
+        await this.vacanciesRepository.updateAvailableVacancy(vacancy_id, false);
     }
 }
