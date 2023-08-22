@@ -24,7 +24,7 @@ export class ParkingsRepository implements IParkingRepository {
 
             await client.query(query, values).then(() => console.log("Parking was created!")).catch((error) => console.error(error));
         } catch (error) {
-            throw new AppError(`${error}`);
+            throw new AppError(`Error creating Parking: ${error}`);
         }
     }
 
@@ -34,7 +34,7 @@ export class ParkingsRepository implements IParkingRepository {
         
             await vacancyRepository.updateAvailableVacancy(vacancy_id, true);
         } catch (error) {
-            throw new AppError(`${error}`);
+            throw new AppError(`Error creating Parking: ${error}`);
         }
     }
 
@@ -66,7 +66,7 @@ export class ParkingsRepository implements IParkingRepository {
         
             await client.query(query, values).then(() => console.log("Parking was updated!")).catch((error) => console.error(error));
         } catch (error) {
-            throw new AppError(`${error}`);
+            throw new AppError(`Error updating Parking: ${error}`);
         }
     }
 
