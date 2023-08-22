@@ -1,4 +1,4 @@
-import { AppError } from "../http/middlwares/AppError";
+import { AppError } from "../http/middlewares/AppError";
 import { ICarsRepository } from "../repositories/CarsRepository";
 
 interface CreateCarsUseCaseRequest {

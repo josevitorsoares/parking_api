@@ -5,7 +5,7 @@ import { client } from "../../../database/db";
 import { Parking } from "../../models/Parking";
 import { IParkingRepository } from "../ParkingRepository";
 import { VacanciesRepository } from "./ConnectionVacanciesRepository";
-import { AppError } from "../../http/middlwares/AppError";
+import { AppError } from "../../http/middlewares/AppError";
 
 dayjs.extend(utc);
 

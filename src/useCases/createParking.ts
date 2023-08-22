@@ -1,4 +1,4 @@
-import { AppError } from "../http/middlwares/AppError";
+import { AppError } from "../http/middlewares/AppError";
 import { ICarsRepository } from "../repositories/CarsRepository";
 import { IParkingRepository } from "../repositories/ParkingRepository";
 import { IVacanciesRepository } from "../repositories/VacanciesRepository";
@@ -8,7 +8,7 @@ interface CreateParkinRequest {
     vacancy_id: string;
 }
 
-const OPENINGTIME = 6; // Opening time
+const OPENINGTIME = 9; // Opening time
 const CLOSETIME = 18; // Closing time
 const ALLVACANCIES = 20; // Total parking vacancies
 
